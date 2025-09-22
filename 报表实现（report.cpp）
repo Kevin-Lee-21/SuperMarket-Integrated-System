@@ -1,0 +1,44 @@
+/************************************************************
+ * 超市管理系统 - 报表统计模块实现文件 (report.cpp)
+ ************************************************************/
+#include "report.h"
+
+// 构造函数
+ReportManager::ReportManager(const vector<Product>& p,
+                             const vector<SaleRecord>& s,
+                             const vector<Member>& m)
+    : products(p), sales(s), members(m) {}
+
+// 设置数据
+void ReportManager::setProducts(const vector<Product>& p) {
+    products = p;
+}
+
+void ReportManager::setSales(const vector<SaleRecord>& s) {
+    sales = s;
+}
+
+void ReportManager::setMembers(const vector<Member>& m) {
+    members = m;
+}
+
+// 销售报表
+void ReportManager::generateSalesReport(const string& startDate,
+                                        const string& endDate) {
+    // TODO: 实现销售统计逻辑
+}
+
+// 利润分析
+void ReportManager::profitAnalysis() {
+    // TODO: 实现利润统计逻辑
+}
+
+// 畅销商品分析
+void ReportManager::bestSellingProduct() {
+    // TODO: 实现畅销商品统计逻辑
+}
+
+// 会员消费分析
+void ReportManager::memberConsumptionAnalysis() {
+    // TODO: 实现会员消费统计逻辑
+}

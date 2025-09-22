@@ -1,0 +1,171 @@
+
+#include <iostream>
+#include <vector>
+#include <string>
+#include <iomanip>  // 控制小数点输出
+using namespace std;
+
+/******************** 数据结构定义 ************************/
+
+// 商品
+struct Product {
+    int id;
+    string name;
+    string category;
+    double price;   // 销售价
+    double cost;    // 进货价（用于利润计算）
+    int stock;
+};
+
+// 销售记录
+struct SaleRecord {
+    int saleId;
+    int productId;
+    int memberId;   // -1 表示非会员
+    int quantity;
+    double totalPrice;
+    string date;    // 格式: YYYY-MM-DD
+};
+
+// 会员
+struct Member {
+    int id;
+    string name;
+    int points;
+    int level;
+    double totalSpent;
+};
+
+/******************** 报表功能函数 ************************/
+
+// 销售报表
+void generateSalesReport(const vector<SaleRecord>& sales,
+                         const string& startDate,
+                         const string& endDate) {
+    cout << "\n========= 销售报表 (" << startDate << " ~ " << endDate << ") =========\n";
+    double totalSales = 0;
+    int totalQuantity = 0;
+
+    for (const auto& s : sales) {
+        // 暂不筛选日期范围，直接输出所有记录
+        cout << "销售ID:" << s.saleId
+             << " 商品ID:" << s.productId
+             << " 数量:" << s.quantity
+             << " 金额:" << fixed << setprecision(2) << s.totalPrice
+             << " 日期:" << s.date << endl;
+
+        totalSales += s.totalPrice;
+        totalQuantity += s.quantity;
+    }
+
+    cout << "总销售额: " << fixed << setprecision(2) << totalSales << endl;
+    cout << "总销售数量: " << totalQuantity << endl;
+    cout << "======================================\n";
+}
+
+// 利润分析
+void profitAnalysis(const vector<SaleRecord>& sales,
+                    const vector<Product>& products) {
+    cout << "\n========= 利润分析 =========\n";
+    double totalProfit = 0;
+
+    for (const auto& s : sales) {
+        for (const auto& p : products) {
+            if (s.productId == p.id) {
+                double profit = (p.price - p.cost) * s.quantity;
+                totalProfit += profit;
+                break;
+            }
+        }
+    }
+
+    cout << "毛利润合计: " << fixed << setprecision(2) << totalProfit << endl;
+    cout << "================================\n";
+}
+
+// 畅销商品分析
+void bestSellingProduct(const vector<SaleRecord>& sales,
+                        const vector<Product>& products) {
+    cout << "\n========= 畅销商品分析 =========\n";
+    vector<int> productSales(products.size(), 0);
+
+    // 累计各商品销售数量
+    for (const auto& s : sales) {
+        for (size_t j = 0; j < products.size(); j++) {
+            if (s.productId == products[j].id) {
+                productSales[j] += s.quantity;
+                break;
+            }
+        }
+    }
+
+    // 找到销量最高的商品
+    int maxIndex = 0;
+    for (size_t i = 1; i < products.size(); i++) {
+        if (productSales[i] > productSales[maxIndex]) {
+            maxIndex = i;
+        }
+    }
+
+    cout << "畅销商品: " << products[maxIndex].name
+         << " (销量: " << productSales[maxIndex] << ")\n";
+    cout << "================================\n";
+}
+
+// 会员消费分析
+void memberConsumptionAnalysis(const vector<SaleRecord>& sales,
+                               const vector<Member>& members) {
+    cout << "\n========= 会员消费分析 =========\n";
+    vector<double> memberSpend(members.size(), 0);
+
+    for (const auto& s : sales) {
+        if (s.memberId != -1) { // 非会员不统计
+            for (size_t j = 0; j < members.size(); j++) {
+                if (s.memberId == members[j].id) {
+                    memberSpend[j] += s.totalPrice;
+                    break;
+                }
+            }
+        }
+    }
+
+    for (size_t i = 0; i < members.size(); i++) {
+        cout << "会员: " << members[i].name
+             << " (ID:" << members[i].id
+             << ") 总消费: " << fixed << setprecision(2) << memberSpend[i] << endl;
+    }
+
+    cout << "================================\n";
+}
+
+/******************** 测试主函数 ************************/
+
+int main() {
+    // 模拟一些数据
+    vector<Product> products = {
+        {1, "苹果", "水果", 5.0, 3.0, 100},
+        {2, "牛奶", "饮品", 10.0, 6.0, 50},
+        {3, "面包", "主食", 8.0, 4.0, 80}
+    };
+
+    vector<SaleRecord> sales = {
+        {101, 1, 201, 10, 50.0, "2025-09-20"},
+        {102, 2, -1, 5, 50.0, "2025-09-20"},
+        {103, 1, 202, 8, 40.0, "2025-09-21"},
+        {104, 3, 201, 6, 48.0, "2025-09-21"},
+        {105, 2, 202, 3, 30.0, "2025-09-21"}
+    };
+
+    vector<Member> members = {
+        {201, "张三", 100, 1, 0},
+        {202, "李四", 200, 2, 0}
+    };
+
+    // 调用报表功能
+    generateSalesReport(sales, "2025-09-20", "2025-09-21");
+    profitAnalysis(sales, products);
+    bestSellingProduct(sales, products);
+    memberConsumptionAnalysis(sales, members);
+
+    return 0;
+}

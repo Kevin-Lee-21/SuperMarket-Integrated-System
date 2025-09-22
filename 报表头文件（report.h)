@@ -1,0 +1,69 @@
+/************************************************************
+ * 超市管理系统 - 报表统计模块头文件 (report.h)
+ ************************************************************/
+#ifndef REPORT_H
+#define REPORT_H
+
+#include <iostream>
+#include <vector>
+#include <string>
+using namespace std;
+
+// ================= 数据结构 =================
+
+// 商品
+struct Product {
+    int id;
+    string name;
+    string category;
+    double price;   
+    double cost;    
+    int stock;
+};
+
+// 销售记录
+struct SaleRecord {
+    int saleId;
+    int productId;
+    int memberId;   
+    int quantity;
+    double totalPrice;
+    string date;    
+};
+
+// 会员
+struct Member {
+    int id;
+    string name;
+    int points;
+    int level;
+    double totalSpent;
+};
+
+// ================= 报表管理类 =================
+
+class ReportManager {
+private:
+    vector<Product> products;
+    vector<SaleRecord> sales;
+    vector<Member> members;
+
+public:
+    ReportManager() {}
+    ReportManager(const vector<Product>& p,
+                  const vector<SaleRecord>& s,
+                  const vector<Member>& m);
+
+    void setProducts(const vector<Product>& p);
+    void setSales(const vector<SaleRecord>& s);
+    void setMembers(const vector<Member>& m);
+
+    void generateSalesReport(const string& startDate,
+                             const string& endDate);
+
+    void profitAnalysis();
+    void bestSellingProduct();
+    void memberConsumptionAnalysis();
+};
+
+#endif
